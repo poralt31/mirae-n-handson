@@ -1,5 +1,8 @@
 package com.example.item;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +29,9 @@ class ItemControllerTest {
 
     @MockBean
     private ItemService itemService;
+
+    @MockBean
+    private ItemSearchService itemSearchService;
 
     @Test
     @DisplayName("GET /api/items/{id} → 200, 문항 JSON")
@@ -74,5 +80,41 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.length()").value(2))
             .andExpect(jsonPath("$[0].id").value(2))
             .andExpect(jsonPath("$[1].tags[0]").value("계산"));
+    }
+
+    @Test
+    @DisplayName("GET /api/items/search → 200, {rows, count, message} 이고 행에는 정규화 필드만")
+    void searchItemsReturnsNormalizedShape() throws Exception {
+        when(itemSearchService.search(any())).thenReturn(ItemSearchResponse.of(
+            List.of(ItemSearchRowResponse.from(ItemSearchFixtures.row(18, "분수의 뺄셈 문장제", "M5-1", 4, "문장제,오답률높음"))),
+            20));
+
+        mockMvc.perform(get("/api/items/search"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(20))
+            .andExpect(jsonPath("$.message").isEmpty())
+            .andExpect(jsonPath("$.rows[0].id").value(18))
+            .andExpect(jsonPath("$.rows[0].title").value("분수의 뺄셈 문장제"))
+            .andExpect(jsonPath("$.rows[0].unit").value("M5-1"))
+            .andExpect(jsonPath("$.rows[0].level").value(4))
+            .andExpect(jsonPath("$.rows[0].tags[1]").value("오답률높음"))
+            .andExpect(jsonPath("$.rows[0].length()").value(5))
+            .andExpect(jsonPath("$.status").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("GET /api/items/search 숫자가 아닌 page · level → 400 이 아니라 그대로 서비스에 넘긴다")
+    void searchItemsPassesRawParams() throws Exception {
+        when(itemSearchService.search(any())).thenReturn(ItemSearchResponse.of(List.of(), 0));
+
+        mockMvc.perform(get("/api/items/search").param("page", "abc").param("level", "05").param("tag[]", "도형", "계산"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(0))
+            .andExpect(jsonPath("$.message").value("검색 결과가 없습니다"));
+
+        verify(itemSearchService).search(argThat(params ->
+            params.get("page").equals(List.of("abc"))
+                && params.get("level").equals(List.of("05"))
+                && params.get("tag[]").equals(List.of("도형", "계산"))));
     }
 }
