@@ -27,6 +27,32 @@ server.registerTool(
 // - 감쌀 API 는 ./itemApi.js 에 있다 (ESM 이라 확장자를 .js 로 적는다)
 // - import 문도 이 자리에 함께 붙여 넣어도 된다
 // ================================================================
+import * as z from 'zod/v4';
+import { searchItems, UNITS } from './itemApi.js';
+
+// 문항 검색: itemApi.searchItems 를 그대로 감싼다.
+server.registerTool(
+  'search_items',
+  {
+    description:
+      '문항 은행에서 문항을 검색한다. keyword 가 문항 본문(stem) 또는 태그에 포함되면 일치. ' +
+      '결과는 { id, unit(단원 코드), unitName, difficulty(하·중·상), tags, stem } 배열(JSON). ' +
+      '난이도는 DB 의 level(1~5)이 아니라 하·중·상 3단계 문자열이다.',
+    inputSchema: z.object({
+      keyword: z.string().describe('본문 또는 태그에서 찾을 문자열. 빈 문자열이면 전체'),
+      unit: z.string().optional().describe("단원 코드('M5-1') 또는 단원 이름 일부('분수의 곱셈')"),
+      difficulty: z.enum(['하', '중', '상']).optional().describe('난이도'),
+      limit: z.number().int().min(1).max(50).optional().describe('최대 건수(기본 5)')
+    })
+  },
+  async ({ keyword, unit, difficulty, limit }) => {
+    const items = await searchItems({ keyword, unit, difficulty, limit });
+    const result = items.map((it) => ({ ...it, unitName: UNITS[it.unit] ?? null }));
+    return {
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+    };
+  }
+);
 
 async function main() {
   const transport = new StdioServerTransport();
