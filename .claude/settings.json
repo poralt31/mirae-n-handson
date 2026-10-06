@@ -4,10 +4,8 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "Bash(cat ~/.claude/settings.json 2>/dev/null || echo \"NOFILE\")",
-      "Read(//home/leesu/.claude/**)"
-    ],
-    "additionalDirectories": [
-      "/home/leesu/.claude"
+      "Bash(./gradlew test *)",
+      "Bash(npm test *)"
     ]
   }
 }
