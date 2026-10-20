@@ -30,12 +30,13 @@ resource "aws_security_group" "itembank_db" {
   description = "itembank dev DB (MariaDB 3306)"
   vpc_id      = var.vpc_id
 
+  # 주의: 3306 을 모든 출발지(0.0.0.0/0)에 열어 둔 상태다. 실습용 더미라서 둔 설정이며 실제 환경에서는 var.api_subnet_cidr 로 제한한다.
   ingress {
-    description = "MariaDB from itembank API subnet"
+    description = "MariaDB from anywhere"
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [var.api_subnet_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -45,7 +46,8 @@ resource "aws_db_subnet_group" "itembank" {
 }
 
 resource "aws_db_instance" "itembank" {
-  identifier     = "itembank-dev-db"
+  # 주의: identifier 변경은 인스턴스 교체(삭제 후 재생성)를 일으킨다. 데이터는 새 인스턴스로 옮겨지지 않는다.
+  identifier     = "itembank-db-v2"
   engine         = "mariadb"
   engine_version = "10.11"
   instance_class = var.db_instance_class

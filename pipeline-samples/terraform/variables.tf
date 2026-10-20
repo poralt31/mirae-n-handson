@@ -35,7 +35,8 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  description = "DB 관리자 비밀번호. 시크릿 저장소에서 주입한다(TF_VAR_db_password)"
+  description = "DB 관리자 비밀번호. 기본값은 실습용 더미이며 TF_VAR_db_password 로 덮어쓸 수 있다"
   type        = string
   sensitive   = true
+  default     = "change-me-dev-only"
 }

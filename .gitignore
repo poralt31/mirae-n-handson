@@ -3,6 +3,7 @@ _build/
 
 # 개인 설정 · 비밀값
 .claude/settings.local.json
+.claude/prompt-logs/
 .env
 
 # 빌드 · 의존성 산출물
@@ -21,3 +22,4 @@ __pycache__/
 .idea/
 *.iml
 .vscode/
+.claude/settings.local.json

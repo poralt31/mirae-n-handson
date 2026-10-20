@@ -31,7 +31,7 @@ allowed-tools:
 | 2 | 컨트롤러가 엔티티 대신 record DTO 를 반환한다 | 같음 | 매핑 메서드 반환 타입(제네릭 안 포함)이 `@Entity` 클래스 |
 | 3 | 서비스 조회 메서드가 `@Transactional(readOnly = true)` 안에 있다 | `modern/api/**/*Service.java` | 쓰기 없는 public 메서드에 클래스 · 메서드 어디에도 readOnly 트랜잭션이 없음 |
 | 4 | 예외를 삼키지 않고 HTTP 변환은 `GlobalExceptionHandler` 한 곳에서만 한다 | `modern/api/src/main/**` | catch 블록에서 다시 던지지 않음, 다른 클래스의 `@ExceptionHandler` · `@ControllerAdvice` |
-| 5 | 현재 시각은 주입받은 `Clock` 으로 얻는다 | `modern/api/src/main/**` | 인자 없는 `LocalDateTime.now()` · `Instant.now()` · `LocalDate.now()` 등 |
+| 5 | 현재 시각은 주입받은 `Clock` 으로  얻 는다 | `modern/api/src/main/**` | 인자 없는 `LocalDateTime.now()` · `Instant.now()` · `LocalDate.now()` 등 |
 | 6 | 웹의 HTTP 호출은 `getJson` 을 거친다 | `modern/web/src/**` (`src/test/`, `src/api/client.ts` 제외) | `fetch(` 직접 호출 |
 | 7 | 테스트 메서드에 한국어 `@DisplayName` 이 있다 | `modern/api/src/test/**` | `@Test` 메서드에 `@DisplayName` 이 없거나 한글이 없음 |
 | 8 | 원본 보존 규칙을 지켰다 | 변경 파일 경로 목록 | 아래 중 하나라도 해당 |
@@ -40,7 +40,7 @@ allowed-tools:
 - `legacy/`, `incident-logs/`, `vendor-prs/`, `characterization/__snapshots__/` 아래 파일이 바뀌었다.
 - `package-lock.json` 이 바뀌었다(`npm install` 흔적).
 - `legacy/grade-mssql/sql/usp_*.sql` 과 `db/mssql/init/04-procs.sql` 중 한쪽만 바뀌었다.
-
+ 
 대상 파일이 하나도 없는 항목은 "해당 없음"으로 적는다.
 `@EntityGraph` 필요 여부, 외부 노출 쿼리의 `status='A'` 조건처럼 판단이 필요한 것은 판정하지 않고, 눈에 띄면 "확인 필요"에만 적는다.
 

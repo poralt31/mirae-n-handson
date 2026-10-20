@@ -22,11 +22,13 @@ cd modern/api && ./gradlew build       # 테스트 포함 전체 빌드
 - 컨트롤러는 서비스만 호출한다. **컨트롤러에서 Repository 를 주입받거나 SQL 문자열을 직접 실행하는 것은 금지**한다.
 - 서비스가 다른 도메인의 데이터를 쓸 때는 그 도메인의 서비스를 통한다. 다른 도메인의 Repository 를 직접 주입하지 않는다.
 - 요청 · 응답은 record 기반 DTO 를 쓴다. 엔티티를 컨트롤러 밖으로 그대로 반환하지 않는다.
+- DTO 생성시 테이블 구조에 맞게 Entity 나눠 구조화된 DTO 생성해주고, Lombok library로 관리해줘
 
 ### 예외 처리
 - **예외를 잡고 아무 처리 없이 넘기는 빈 `catch` 블록은 금지**한다. 잡았으면 로그를 남기고 다시 던지거나, 의미 있는 도메인 예외로 바꿔 던진다.
 - 예외 → HTTP 응답 변환은 `@ControllerAdvice` 한 곳에서만 한다. 컨트롤러 메서드 안의 try-catch 로 상태 코드를 만들지 않는다.
 - 없는 리소스는 404, 검증 실패는 400, 그 밖의 예상 못 한 예외는 500 으로 매핑한다.
+- final 에 상황에 맞는 exception 처리 로 로그 남겨줘.
 
 ### 로깅
 - 로그는 SLF4J(`org.slf4j.Logger`)로만 남긴다. **`System.out.println` · `System.err.println` · `e.printStackTrace()` 는 금지**한다.
