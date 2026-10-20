@@ -1,3 +1,3 @@
-레거시 과제 목록 `GET /assignments`(assignment-thymeleaf)를 `modern/api` 의 `GET /api/assignments` 로 옮긴 뒤, 같은 동작 보존 스냅샷이 레거시와 새 API 양쪽에서 맞는지 확인하고 `/verify` 로 머지 승인 · 반려를 판정하는 과정을 자동화한다.
-실행: `cd modern/api && ./gradlew bootRun` 으로 8080 을 띄운 뒤 `cd characterization && npm test && TARGET_BASE_URL=http://localhost:8080 npm test` 를 돌리고, 판정은 Skill `/verify` 에 범위(`day4-start..HEAD`)와 요청 문장(DESIGN.md "3. 범위 — 한다")을 넘겨 받는다.
-한계는 읽기 1케이스(기본 조회)만 다루고 PR 자동 리뷰 단계(DESIGN.md 단계 2)는 아직 돌리지 않았으며, 8080 이 이전 빌드면 404 로 실패하고, 응답 필드명 `col2` · `col4` · `col6` 이 `normalize.mjs` `HEADER_MAP` 의 빈틈에 묶여 있다는 점이므로, 현업에서는 HEADER_MAP 확장과 스냅샷 재기준(승인 필요), 서버 재기동을 포함한 실행 스크립트, PR 리뷰 수단(CI 등) 확정을 먼저 바꿔야 한다.
+레거시 과제 목록 `GET /assignments` 를 `modern/api` 의 `GET /api/assignments` 로 옮긴 뒤, 같은 동작 보존 스냅샷이 레거시와 새 API 양쪽에서 맞는지 확인하고 Skill `/verify` 로 머지 승인 · 반려를 판정하는 과정을 자동화한다.
+`cd modern/api && ./gradlew bootRun` (별도 터미널) → `cd characterization && npm test && TARGET_BASE_URL=http://localhost:8080 npm test` → `/verify day4-start..HEAD 요청 범위: docs/project/DESIGN.md 의 "3. 범위 — 한다"`
+기본 조회 1케이스만 다루고 PR 자동 리뷰(DESIGN.md 단계 2)는 아직 없으며 응답 필드명 `col2` · `col4` · `col6` 이 `characterization/lib/normalize.mjs` 의 `HEADER_MAP` 빈틈에 묶여 있으므로, 현업에서는 `HEADER_MAP` 확장과 스냅샷 재기준(승인 필요), 서버 재기동까지 묶은 실행 스크립트, PR 리뷰 수단(CI 등)을 먼저 정해야 한다.
